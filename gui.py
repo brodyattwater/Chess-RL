@@ -1,7 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 from chess import ChessGame
-import time
 
 PhotoImage = ImageTk.PhotoImage
 SPRITE_SIZE = 100
@@ -60,12 +59,11 @@ class Chess:
             # Check the player is moving the correct colour.
             if self.chess.to_move == 'White' and piece < 0:
                 print("Please select a white piece to move.")
-                return
             elif self.chess.to_move == 'Black' and piece > 0:
                 print("Please select a black piece to move.")
-                return
             # Update the board
-            self.chess.update(piece, move_from, move_to)
+            else:
+                self.chess.update(piece, move_from, move_to)
         self.draw_board()
         self.window.update()
 
