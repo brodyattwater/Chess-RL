@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class ChessBoard:
+class ChessGame:
     """
     An environment for Chess.
     """
@@ -10,32 +10,12 @@ class ChessBoard:
         '''
         Initializes following params:
         board: 8x8 board with piece positions
-        white_in_check: boolean
-        black_in_check: boolean
-        white_to move: boolean
-        white_castled: boolean
-        black_castled: boolean
-            '''
+        white_to move: boolean to tell which player it is to move
+        white_can_castle: boolean to tell can white castle?
+        black_can_castle: boolean to tell can black castle?
+        '''
         self.board = np.zeros((8, 8), dtype=int)
-        self.pieces = {
-                                    0: '',
-                                    1: '♙',
-                                    2: '♖',
-                                    3: '♘',
-                                    4: '♗',
-                                    5: '♕',
-                                    6: '♔',
-                                    -1: '♟',
-                                    -2: '♜',
-                                    -3: '♞',
-                                    -4: '♝',
-                                    -5: '♛',
-                                    -6: '♚'
-                                }
-        self.squares = {}
-        for row in range(8):
-            for col in range(8):
-                self.squares[(row, col)] = chr(col + ord('a')) + str(row + 1)
+
         # Pawns
         for i in range(8):
             self.board[1][i] = 1
@@ -60,51 +40,37 @@ class ChessBoard:
         self.board[7][5] = -4
 
         # Queens
-        self.board[0][3] = 5
-        self.board[7][3] = -5
+        self.board[0][4] = 5
+        self.board[7][4] = -5
 
         # Kings
-        self.board[0][4] = 6
-        self.board[7][4] = -6
+        self.board[0][3] = 6
+        self.board[7][3] = -6
 
         # Track game parameters
-        self.white_to_move = True
-        self.white_in_check = False
-        self.black_in_check = False
+        self.to_move = 'White'
         self.white_can_castle = True
         self.black_can_castle = True
         self.win = 0
 
-        # Print the board
-        print(np.flip(self.board, axis=0))
-
-    def in_check(self, board, color):
+    def in_check(self, color):
         '''
         This is a function to check for check.
         It takes in a board and a color, and it returns True or False.
         '''
-
         # Get king position.
-        if color == 0:
-            king_pos = np.where(board == 6)
-        else:
-            king_pos = np.where(board == -6)
+        if color == 'White':
+            king_pos = np.where(self.board == 6)
+            enemy_piece = np.where(self.board < 0)
+        elif color == 'Black':
+            king_pos = np.where(self.board == -6)
+            enemy_piece = np.where(self.board > 0)
         king_pos = (king_pos[0][0], king_pos[1][0])
 
         # Check if any opposite color piece can move to the king position.
-        for i in range(8):
-            for j in range(8):
-                if color == 0:
-                    # Check black pieces
-                    if board[i][j] < 0:
-                        if self.can_move(board[i][j], (i, j), king_pos):
-                            print(board[i][j], 'on', (i, j), 'can capture the king on: ', king_pos)
-                            return True
-                else:
-                    # Check white pieces
-                    if board[i][j] > 0:
-                        if self.can_move(board[i][j], (i, j), king_pos):
-                            return True
+        for i, j in zip(enemy_piece[0], enemy_piece[1]):
+            if self.can_move(self.board[i][j], (i, j), king_pos):
+                return True
         return False
 
     def can_move(self, piece, move_from, move_to):
@@ -222,14 +188,14 @@ class ChessBoard:
         elif abs(piece) == 6:
             # Castling
             if piece == 6 and self.white_can_castle:
-                if move_to == (0, 6) and self.board[0, 5] == 0:
+                if move_to == (0, 1) and self.board[0, 2] == 0 and self.board[0, 1] == 0:
                     return True
-                if move_to == (0, 2) and self.board[0, 3] == 0 and self.board[0, 4] == 0:
+                if move_to == (0, 5) and self.board[0, 4] == 0 and self.board[0, 5] == 0 and self.board[0, 6] == 0:
                     return True
             if piece == -6 and self.black_can_castle:
-                if move_to == (7, 6) and self.board[7, 5] == 0:
+                if move_to == (7, 1) and self.board[7, 2] == 0 and self.board[7, 1] == 0:
                     return True
-                if move_to == (7, 2) and self.board[7, 3] == 0 and self.board[7, 4] == 0:
+                if move_to == (7, 5) and self.board[7, 4] == 0 and self.board[7, 5] == 0 and self.board[7, 6] == 0:
                     return True
 
             # Normal move
@@ -245,77 +211,76 @@ class ChessBoard:
 
     def legal_move(self, piece, move_from, move_to):
         """
-        Returns True or False.
-        Checks if a move from a square to a square by a piece is legal.
-        I.e. making the move does not put the king into check.
+        Returns True if a move from a square to a square by a piece is legal.
         """
-        temp_board = np.copy(self.board)
-        temp_board[move_to[0]][move_to[1]] = piece
-        temp_board[move_from[0]][move_from[1]] = 0
-        if self.white_to_move:
-            if self.in_check(temp_board, 0):
-                return False
+        temp = self.board[move_to[0]][move_to[1]]
+        self.board[move_to[0]][move_to[1]] = piece
+        self.board[move_from[0]][move_from[1]] = 0
+        if self.in_check(self.to_move):
+            self.board[move_to[0]][move_to[1]] = temp
+            self.board[move_from[0]][move_from[1]] = piece
+            return False
         else:
-            if self.in_check(temp_board, 1):
-                return False
-        return True
+            self.board[move_to[0]][move_to[1]] = temp
+            self.board[move_from[0]][move_from[1]] = piece
+            return True
 
-    def print_legal_moves(self, board, color):
-        for i in range(8):
-            for j in range(8):
-                if color == 0:
-                    # Check white pieces
-                    if board[i][j] > 0:
-                        for x in range(8):
-                            for y in range(8):
-                                if self.can_move(board[i][j], (i, j), (x, y)):
-                                    piece_name = self.pieces[board[i][j]]
-                                    square_name = self.squares[(x, y)]
-                                    print(piece_name, 'to', square_name)
-                else:
-                    # Check black pieces
-                    if board[i][j] < 0:
-                        for x in range(8):
-                            for y in range(8):
-                                if self.can_move(board[i][j], (i, j), (x, y)) and self.legal_move(board[i][j], (i, j), (x, y)):
-                                    piece_name = self.pieces[board[i][j]]
-                                    square_name = self.squares[(x, y)]
-                                    print(piece_name, 'to', square_name)
+    def no_legal_moves(self):
+        '''
+        Returns true if there exists no legal moves for the colour to play.
+        '''
+        if self.to_move == 'White':
+            pieces = np.where(self.board > 0)
+        elif self.to_move == 'Black':
+            pieces = np.where(self.board < 0)
+
+        for i, j in zip(pieces[0], pieces[1]):
+            for x in range(0, 7):
+                for y in range(0, 7):
+                    if self.can_move(self.board[i][j], (i, j), (x, y)) and self.legal_move(self.board[i][j], (i, j), (x, y)):
+                        return False
+        return True
 
     def update(self, piece, move_from, move_to):
         # If the move is possible and legal.
-        if self.can_move(piece, move_from, move_to) and self.legal_move(piece, move_from, move_to):
-            # Check if castling.
-            if piece == 6 and move_to == (0, 6):
-                self.board[0, 7] = 0
-                self.board[0, 5] = 2
+        if self.can_move(piece, move_from, move_to):
+            if self.legal_move(piece, move_from, move_to):
+                # Check if castling.
+                if piece == 6 and move_to == (0, 5):
+                    self.board[0, 7] = 0
+                    self.board[0, 4] = 2
 
-            if piece == 6 and move_to == (0, 3):
-                self.board[0, 0] = 0
-                self.board[0, 4] = 2
+                if piece == 6 and move_to == (0, 1):
+                    self.board[0, 0] = 0
+                    self.board[0, 2] = 2
 
-            if piece == -6 and move_to == (7, 6):
-                self.board[7, 7] = 0
-                self.board[7, 5] = 2
+                if piece == -6 and move_to == (7, 5):
+                    self.board[7, 7] = 0
+                    self.board[7, 4] = -2
 
-            if piece == 6 and move_to == (7, 3):
-                self.board[7, 0] = 0
-                self.board[7, 4] = 2
+                if piece == -6 and move_to == (7, 1):
+                    self.board[7, 0] = 0
+                    self.board[7, 2] = -2
 
-            self.board[move_to[0]][move_to[1]] = piece
-            self.board[move_from[0]][move_from[1]] = 0
+                self.board[move_to[0]][move_to[1]] = piece
+                self.board[move_from[0]][move_from[1]] = 0
 
-            # Update castling booleans.
-            if abs(piece) == 2 or abs(piece) == 6:
-                # update the white_castle or black_castle boolean
-                if piece > 0:
-                    self.white_can_castle = False
-                else:
-                    self.black_can_castle = False
+                # Update castling booleans.
+                if abs(piece) == 2 or abs(piece) == 6:
+                    # update the white_castle or black_castle boolean
+                    if piece > 0:
+                        self.white_can_castle = False
+                    else:
+                        self.black_can_castle = False
 
-            # Switch the turn.
-            self.white_to_move = not self.white_to_move
-            print(np.flip(self.board, axis=0))
+                # Check for end conditions otherwise switch the turn to the other player
+                if self.to_move == 'White':
+                    self.to_move = 'Black'
+                elif self.to_move == 'Black':
+                    self.to_move = 'White'
 
-        else:
-            print("Not legal.")
+                if self.no_legal_moves():
+                    if self.in_check(self.to_move):
+                        print("Checkmate.")
+                    else:
+                        print("Stalemate.")
