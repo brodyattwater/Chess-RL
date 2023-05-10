@@ -316,7 +316,11 @@ class ChessGame:
 
                 if self.no_legal_moves():
                     if self.in_check(self.to_move):
-                        print("Checkmate.")
-                        self.winner = self.to_move
+                        if self.to_move == 'White':
+                            winner = 'Black'
+                        elif self.to_move == 'Black':
+                            winner = 'White'
+                        print(winner + " wins.")
+                        self.winner = winner
                     else:
                         print("Stalemate.")
