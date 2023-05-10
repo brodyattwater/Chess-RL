@@ -317,5 +317,6 @@ class ChessGame:
                 if self.no_legal_moves():
                     if self.in_check(self.to_move):
                         print("Checkmate.")
+                        self.winner = self.to_move
                     else:
                         print("Stalemate.")

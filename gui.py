@@ -4,9 +4,9 @@ from chess import ChessGame
 import time
 
 PhotoImage = ImageTk.PhotoImage
-SPRITE_SIZE = 30
+SPRITE_SIZE = 100
 SQUARE_COUNT = 8
-SQUARE_SIZE = 30  # pixels
+SQUARE_SIZE = 100  # pixels
 
 
 class Chess:
@@ -27,6 +27,7 @@ class Chess:
         self.window.mainloop()
 
     def draw_board(self):
+        self.canvas.delete("all")
         for row in range(SQUARE_COUNT):
             for col in range(SQUARE_COUNT):
                 x1 = col * SQUARE_SIZE
@@ -34,11 +35,11 @@ class Chess:
                 x2 = x1 + SQUARE_SIZE
                 y2 = y1 + SQUARE_SIZE
                 if (row, col) == self.first_click:
-                    color = 'green'
+                    color = 'red'
                 elif (row + col) % 2 == 0:
                     color = 'white'
                 else:
-                    color = 'brown'
+                    color = 'green'
                 self.canvas.create_rectangle(x1, y1, x2, y2, fill=color)
                 piece = self.chess.board[row][col]
                 if piece != 0:
