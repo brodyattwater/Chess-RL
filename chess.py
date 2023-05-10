@@ -49,9 +49,11 @@ class ChessGame:
 
         # Track game parameters
         self.to_move = 'White'
-        self.white_can_castle = True
-        self.black_can_castle = True
-        self.win = 0
+        self.white_can_short_castle = True
+        self.white_can_long_castle = True
+        self.black_can_short_castle = True
+        self.black_can_long_castle = True
+        self.winner = None
 
     def in_check(self, color):
         '''
@@ -99,9 +101,10 @@ class ChessGame:
                     # Check if it can move one square forward
                     if end_row == start_row + 1 and end_col == start_col and self.board[end_row][end_col] == 0:
                         return True
-                # Check if it can capture diagonally
-                if end_row == start_row + 1 and abs(end_col - start_col) == 1 and self.board[end_row][end_col] < 0:
-                    return True
+                # Check if it can capture diagonally (inc. en passant)
+                if end_row == start_row + 1 and abs(end_col - start_col) == 1:
+                    if self.board[end_row][end_col] < 0 or self.board[start_row][end_col] == -1:
+                        return True
             else:  # Black pawn
                 if start_row == 6:  # Pawn is on its starting position
                     # Check if it can move one or two squares forward
@@ -114,8 +117,9 @@ class ChessGame:
                     if end_row == start_row - 1 and end_col == start_col and self.board[end_row][end_col] == 0:
                         return True
                 # Check if it can capture diagonally
-                if end_row == start_row - 1 and abs(end_col - start_col) == 1 and self.board[end_row][end_col] > 0:
-                    return True
+                if end_row == start_row - 1 and abs(end_col - start_col) == 1:
+                    if self.board[end_row][end_col] > 0 or self.board[start_row][end_col] == 1:
+                        return True
 
         # Rook
         elif abs(piece) == 2:
@@ -187,15 +191,19 @@ class ChessGame:
         # King
         elif abs(piece) == 6:
             # Castling
-            if piece == 6 and self.white_can_castle:
-                if move_to == (0, 1) and self.board[0, 2] == 0 and self.board[0, 1] == 0:
+            if piece == 6:
+                if move_to == (0, 1) and self.board[0, 2] == 0 and self.board[
+                    0, 1] == 0 and self.white_can_short_castle:
                     return True
-                if move_to == (0, 5) and self.board[0, 4] == 0 and self.board[0, 5] == 0 and self.board[0, 6] == 0:
+                if move_to == (0, 5) and self.board[0, 4] == 0 and self.board[0, 5] == 0 and self.board[
+                    0, 6] == 0 and self.white_can_long_castle:
                     return True
-            if piece == -6 and self.black_can_castle:
-                if move_to == (7, 1) and self.board[7, 2] == 0 and self.board[7, 1] == 0:
+            if piece == -6:
+                if move_to == (7, 1) and self.board[7, 2] == 0 and self.board[
+                    7, 1] == 0 and self.black_can_short_castle:
                     return True
-                if move_to == (7, 5) and self.board[7, 4] == 0 and self.board[7, 5] == 0 and self.board[7, 6] == 0:
+                if move_to == (7, 5) and self.board[7, 4] == 0 and self.board[7, 5] == 0 and self.board[
+                    7, 6] == 0 and self.black_can_long_castle:
                     return True
 
             # Normal move
@@ -211,7 +219,7 @@ class ChessGame:
 
     def legal_move(self, piece, move_from, move_to):
         """
-        Returns True if a move from a square to a square by a piece is legal.
+        returns True if a move from a square to a square by a piece is legal.
         """
         temp = self.board[move_to[0]][move_to[1]]
         self.board[move_to[0]][move_to[1]] = piece
@@ -227,7 +235,7 @@ class ChessGame:
 
     def no_legal_moves(self):
         '''
-        Returns true if there exists no legal moves for the colour to play.
+        returns true if there exists no legal moves for the colour to play.
         '''
         if self.to_move == 'White':
             pieces = np.where(self.board > 0)
@@ -237,7 +245,8 @@ class ChessGame:
         for i, j in zip(pieces[0], pieces[1]):
             for x in range(0, 7):
                 for y in range(0, 7):
-                    if self.can_move(self.board[i][j], (i, j), (x, y)) and self.legal_move(self.board[i][j], (i, j), (x, y)):
+                    if self.can_move(self.board[i][j], (i, j), (x, y)) and self.legal_move(self.board[i][j], (i, j),
+                                                                                           (x, y)):
                         return False
         return True
 
@@ -262,16 +271,42 @@ class ChessGame:
                     self.board[7, 0] = 0
                     self.board[7, 2] = -2
 
+                # Promotion
+                if piece == 1 and move_to[0] == 7:
+                    piece = 5
+                if piece == -1 and move_to[0] == 0:
+                    piece = -5
+
+                # En Passant
+                if piece == 1 and move_to[0] == 5:
+                    self.board[move_from[0]][move_to[1]] = 0
+                if piece == -1 and move_to[0] == 2:
+                    self.board[move_from[0]][move_to[1]] = 0
+
                 self.board[move_to[0]][move_to[1]] = piece
                 self.board[move_from[0]][move_from[1]] = 0
 
-                # Update castling booleans.
-                if abs(piece) == 2 or abs(piece) == 6:
-                    # update the white_castle or black_castle boolean
-                    if piece > 0:
-                        self.white_can_castle = False
-                    else:
-                        self.black_can_castle = False
+                # Castling Rights
+                if piece == 6:
+                    self.white_can_short_castle = False
+                    self.white_can_long_castle = False
+                    # print("White lost both short and long castle")
+                if piece == -6:
+                    self.black_can_short_castle = False
+                    self.black_can_long_castle = False
+                    # print("Black lost both short and long castle")
+                if piece == 2 and move_from[1] == 0 or move_to == (0, 0):
+                    self.white_can_short_castle = False
+                    # print("White lost short castle")
+                if piece == 2 and move_from[1] == 7 or move_to == (0, 7):
+                    self.white_can_long_castle = False
+                    # print("White lost long castle")
+                if piece == -2 and move_from[1] == 0 or move_to == (7, 0):
+                    self.black_can_short_castle = False
+                    # print("Black lost short castle")
+                if piece == -2 and move_from[1] == 7 or move_to == (7, 7):
+                    self.black_can_long_castle = False
+                    # print("Black lost long castle")
 
                 # Check for end conditions otherwise switch the turn to the other player
                 if self.to_move == 'White':

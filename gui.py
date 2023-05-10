@@ -4,9 +4,9 @@ from chess import ChessGame
 import time
 
 PhotoImage = ImageTk.PhotoImage
-SPRITE_SIZE = 50
+SPRITE_SIZE = 30
 SQUARE_COUNT = 8
-SQUARE_SIZE = 50  # pixels
+SQUARE_SIZE = 30  # pixels
 
 
 class Chess:
