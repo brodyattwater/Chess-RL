@@ -54,6 +54,7 @@ class ChessGame:
         self.black_can_short_castle = True
         self.black_can_long_castle = True
         self.winner = None
+        self.en_passant = [0, 0]
 
     def in_check(self, color):
         '''
@@ -103,7 +104,8 @@ class ChessGame:
                         return True
                 # Check if it can capture diagonally (inc. en passant)
                 if end_row == start_row + 1 and abs(end_col - start_col) == 1:
-                    if self.board[end_row][end_col] < 0 or self.board[start_row][end_col] == -1:
+                    if self.board[end_row][end_col] < 0 or\
+                            self.board[start_row][end_col] == -1 and self.en_passant[0] == 1 and self.en_passant[1] == end_col:
                         return True
             else:  # Black pawn
                 if start_row == 6:  # Pawn is on its starting position
@@ -118,7 +120,8 @@ class ChessGame:
                         return True
                 # Check if it can capture diagonally
                 if end_row == start_row - 1 and abs(end_col - start_col) == 1:
-                    if self.board[end_row][end_col] > 0 or self.board[start_row][end_col] == 1:
+                    if self.board[end_row][end_col] > 0 or\
+                            self.board[start_row][end_col] == 1 and self.en_passant[0] == 1 and self.en_passant[1] == end_col:
                         return True
 
         # Rook
@@ -277,14 +280,24 @@ class ChessGame:
                 if piece == -1 and move_to[0] == 0:
                     piece = -5
 
-                # En Passant
+                # En Passant Logic
+                if abs(piece) == 1 and abs(move_from[0]-move_to[0]) == 2:
+                    self.en_passant[0] = min(self.en_passant[0] + 2, 2)
+                    self.en_passant[1] = move_from[1]
+
+                # En Passant Capture
                 if piece == 1 and move_to[0] == 5:
                     self.board[move_from[0]][move_to[1]] = 0
                 if piece == -1 and move_to[0] == 2:
                     self.board[move_from[0]][move_to[1]] = 0
 
+                # Play The Move
                 self.board[move_to[0]][move_to[1]] = piece
                 self.board[move_from[0]][move_from[1]] = 0
+
+                # Decrement En Passant Counter
+                self.en_passant[0] = max(self.en_passant[0] - 1, 0)
+                print(self.en_passant)
 
                 # Castling Rights
                 if piece == 6:
