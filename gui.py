@@ -70,27 +70,27 @@ class Chess:
 
 def load_images():
     bB = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/bB.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/bB.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     bN = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/bN.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/bN.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     bK = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/bK.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/bK.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     bQ = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/bQ.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/bQ.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     bP = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/bP.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/bP.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     bR = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/bR.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/bR.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     wB = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/wB.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/wB.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     wR = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/wR.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/wR.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     wK = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/wK.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/wK.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     wQ = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/wQ.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/wQ.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     wP = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/wP.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/wP.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     wN = PhotoImage(
-        Image.open("C:/Users/attwa/Documents/GitHub/Chess-RL/maestro/wN.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
+        Image.open("C:/Users/Brody/Documents/GitHub/Chess-RL/maestro/wN.bmp").resize((SPRITE_SIZE, SPRITE_SIZE)))
     return bB, bN, bK, bQ, bP, bR, wB, wR, wK, wQ, wP, wN

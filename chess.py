@@ -297,7 +297,6 @@ class ChessGame:
 
                 # Decrement En Passant Counter
                 self.en_passant[0] = max(self.en_passant[0] - 1, 0)
-                print(self.en_passant)
 
                 # Castling Rights
                 if piece == 6:
