@@ -253,6 +253,21 @@ class ChessGame:
                         return False
         return True
 
+    def return_legal_moves(self):
+        legal_moves = []
+        if self.to_move == 'White':
+            pieces = np.where(self.board > 0)
+        elif self.to_move == 'Black':
+            pieces = np.where(self.board < 0)
+
+        for i, j in zip(pieces[0], pieces[1]):
+            for x in range(0, 8):
+                for y in range(0, 8):
+                    if self.can_move(self.board[i][j], (i, j), (x, y)) and self.legal_move(self.board[i][j], (i, j),
+                                                                                           (x, y)):
+                        legal_moves.append((i, j, x, y))
+        return legal_moves
+
     def update(self, piece, move_from, move_to):
         # If the move is possible and legal.
         if self.can_move(piece, move_from, move_to):
@@ -334,5 +349,6 @@ class ChessGame:
                             winner = 'White'
                         print(winner + " wins.")
                         self.winner = winner
+                        exit(0)
                     else:
                         print("Stalemate.")

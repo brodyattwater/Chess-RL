@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 from chess import ChessGame
+import random
 
 PhotoImage = ImageTk.PhotoImage
 SPRITE_SIZE = 100
@@ -63,6 +64,11 @@ class Chess:
                 print("Please select a black piece to move.")
             # Update the board
             else:
+                self.chess.update(piece, move_from, move_to)
+                random_move = random.choice(self.chess.return_legal_moves())
+                piece = self.chess.board[random_move[0], random_move[1]]
+                move_from = (random_move[0], random_move[1])
+                move_to = (random_move[2], random_move[3])
                 self.chess.update(piece, move_from, move_to)
         self.draw_board()
         self.window.update()
