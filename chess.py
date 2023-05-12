@@ -246,8 +246,8 @@ class ChessGame:
             pieces = np.where(self.board < 0)
 
         for i, j in zip(pieces[0], pieces[1]):
-            for x in range(0, 7):
-                for y in range(0, 7):
+            for x in range(0, 8):
+                for y in range(0, 8):
                     if self.can_move(self.board[i][j], (i, j), (x, y)) and self.legal_move(self.board[i][j], (i, j),
                                                                                            (x, y)):
                         return False
